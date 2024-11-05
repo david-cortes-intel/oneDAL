@@ -28,6 +28,12 @@
 #include "src/algorithms/service_error_handling.h"
 #include "src/threading/threading.h"
 #include "src/externals/service_profiler.h"
+#include <iostream>
+#include <chrono>
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::duration;
+using std::chrono::milliseconds;
 
 namespace daal
 {
@@ -178,6 +184,7 @@ Status UpdateKernel<algorithmFPType, cpu>::compute(const NumericTable & xTable, 
                                                    NumericTable & xtyTable, bool initializeResult, bool interceptFlag,
                                                    const HyperparameterType * hyperparameter)
 {
+    auto st_time = high_resolution_clock::now();
     DAAL_ITTNOTIFY_SCOPED_TASK(computeUpdate);
     DAAL_INT nRows(xTable.getNumberOfRows());         /* observations */
     DAAL_INT nResponses(yTable.getNumberOfColumns()); /* responses */
@@ -246,6 +253,9 @@ Status UpdateKernel<algorithmFPType, cpu>::compute(const NumericTable & xTable, 
         delete tlsLocal;
     });
 
+    auto end_time = high_resolution_clock::now();
+    duration<double, std::milli> time_agg = end_time - st_time;
+    std::cout << "aggregation time:" << time_agg.count() << std::endl;
     return st;
 }
 

@@ -44,6 +44,12 @@
 #include "src/externals/service_lapack.h"
 #include "src/externals/service_memory.h"
 #include "src/externals/service_math.h"
+#include <iostream>
+#include <chrono>
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::duration;
+using std::chrono::milliseconds;
 
 #if defined(DAAL_INTEL_CPP_COMPILER)
     #include "immintrin.h"
@@ -647,6 +653,7 @@ inline double MinkowskiDistances<double, avx512>::computeDistance(const double *
 template <typename FPType, CpuType cpu>
 bool solveEquationsSystemWithCholesky(FPType * a, FPType * b, size_t n, size_t nX, bool sequential)
 {
+    auto st = high_resolution_clock::now();
     /* POTRF and POTRS parameters */
     char uplo     = 'U';
     DAAL_INT info = 0;
@@ -660,6 +667,9 @@ bool solveEquationsSystemWithCholesky(FPType * a, FPType * b, size_t n, size_t n
     {
         LapackInst<FPType, cpu>::xpotrf(&uplo, (DAAL_INT *)&n, a, (DAAL_INT *)&n, &info);
     }
+    auto end = high_resolution_clock::now();
+    duration<double, std::milli> time_potrf = end - st;
+    std::cout << "potrf time:" << time_potrf.count() << std::endl;
     if (info != 0) return false;
 
     /* Note: there can be cases in which the matrix is singular / rank-deficient, but due to numerical
@@ -675,6 +685,7 @@ bool solveEquationsSystemWithCholesky(FPType * a, FPType * b, size_t n, size_t n
     }
 
     /* Solve L*L' * x = b */
+    st = high_resolution_clock::now();
     if (sequential)
     {
         LapackInst<FPType, cpu>::xxpotrs(&uplo, (DAAL_INT *)&n, (DAAL_INT *)&nX, a, (DAAL_INT *)&n, b, (DAAL_INT *)&n, &info);
@@ -683,12 +694,16 @@ bool solveEquationsSystemWithCholesky(FPType * a, FPType * b, size_t n, size_t n
     {
         LapackInst<FPType, cpu>::xpotrs(&uplo, (DAAL_INT *)&n, (DAAL_INT *)&nX, a, (DAAL_INT *)&n, b, (DAAL_INT *)&n, &info);
     }
+    end = high_resolution_clock::now();
+    duration<double, std::milli> time_potrs = end - st;
+    std::cout << "potrs time:" << time_potrs.count() << std::endl;
     return (info == 0);
 }
 
 template <typename FPType, CpuType cpu>
 bool solveEquationsSystemWithSpectralDecomposition(FPType * a, FPType * b, size_t n, size_t nX, bool sequential)
 {
+    auto st = high_resolution_clock::now();
     /* Storage for the eigenvalues.
     Note: this allocates more size than they might require when nX > 1, because the same
     buffer will get reused later on and needs the extra size. Those additional entries
@@ -833,6 +848,9 @@ bool solveEquationsSystemWithSpectralDecomposition(FPType * a, FPType * b, size_
                                           (DAAL_INT *)&n);
         }
     }
+    auto end = high_resolution_clock::now();
+    duration<double, std::milli> time_eig = end - st;
+    std::cout << "eigen time:" << time_eig.count() << std::endl;
 
     return true;
 }
