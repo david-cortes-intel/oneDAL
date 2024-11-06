@@ -184,6 +184,19 @@ Status UpdateKernel<algorithmFPType, cpu>::compute(const NumericTable & xTable, 
                                                    NumericTable & xtyTable, bool initializeResult, bool interceptFlag,
                                                    const HyperparameterType * hyperparameter)
 {
+    /* Split rows by blocks */
+    size_t nRowsInBlock = 128;
+    if (hyperparameter != nullptr)
+    {
+        DAAL_INT64 nRowsInBlockInt64 = 0l;
+        services::Status status      = hyperparameter->find(denseUpdateStepBlockSize, nRowsInBlockInt64);
+        DAAL_CHECK(0l < nRowsInBlockInt64, services::ErrorIncorrectDataRange);
+        DAAL_CHECK_STATUS_VAR(status);
+
+        nRowsInBlock = static_cast<size_t>(nRowsInBlockInt64);
+    }
+    std::cout << "nRowsInBlock:" << nRowsInBlock << std::endl;
+
     auto st_time = high_resolution_clock::now();
     DAAL_ITTNOTIFY_SCOPED_TASK(computeUpdate);
     DAAL_INT nRows(xTable.getNumberOfRows());         /* observations */
@@ -205,18 +218,6 @@ Status UpdateKernel<algorithmFPType, cpu>::compute(const NumericTable & xTable, 
     {
         service_memset<algorithmFPType, cpu>(xtx, 0, nBetasIntercept * nBetasIntercept);
         service_memset<algorithmFPType, cpu>(xty, 0, nResponses * nBetasIntercept);
-    }
-
-    /* Split rows by blocks */
-    size_t nRowsInBlock = 128;
-    if (hyperparameter != nullptr)
-    {
-        DAAL_INT64 nRowsInBlockInt64 = 0l;
-        services::Status status      = hyperparameter->find(denseUpdateStepBlockSize, nRowsInBlockInt64);
-        DAAL_CHECK(0l < nRowsInBlockInt64, services::ErrorIncorrectDataRange);
-        DAAL_CHECK_STATUS_VAR(status);
-
-        nRowsInBlock = static_cast<size_t>(nRowsInBlockInt64);
     }
 
     size_t nBlocks = nRows / nRowsInBlock;
