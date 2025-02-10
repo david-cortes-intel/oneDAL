@@ -128,7 +128,7 @@ y           := $(notdir $(filter $(_OS)/%,lnx/so win/dll mac/dylib))
 -Fo         := $(if $(OS_is_win),-Fo,-o)
 -Q          := $(if $(OS_is_win),$(if $(COMPILER_is_vc),-,-Q),-)
 -cxx17      := $(if $(COMPILER_is_vc),/std:c++17,$(-Q)std=c++17)
--fPIC       := $(if $(OS_is_win),,-fPIC)
+-fPIC       := $(if $(OS_is_win),,-fPIC -fvisibility=hidden)
 -DMKL_ILP64 := $(if $(filter mkl,$(BACKEND_CONFIG)),-DMKL_ILP64)
 -Zl         := $(-Zl.$(COMPILER))
 -Zl_DPCPP   := $(-Zl.dpcpp)
@@ -137,8 +137,8 @@ y           := $(notdir $(filter $(_OS)/%,lnx/so win/dll mac/dylib))
 -DEBL       := $(if $(REQDBG),$(if $(OS_is_win),-debug,))
 -EHsc       := $(if $(OS_is_win),-EHsc,)
 -isystem    := $(if $(OS_is_win),-I,-isystem)
--sGRP       := $(if $(OS_is_lnx),-Wl$(comma)--start-group,)
--eGRP       := $(if $(OS_is_lnx),-Wl$(comma)--end-group,)
+-sGRP       := $(if $(OS_is_lnx),-Wl$(comma)--start-group -Wl$(comma)--exclude-libs=ALL,)
+-eGRP       := $(if $(OS_is_lnx),-Wl$(comma)--end-group -Wl$(comma)--exclude-libs=ALL,)
 daalmake = make
 
 $(eval $(call set_uarch_options_for_compiler,$(COMPILER)))
@@ -491,10 +491,10 @@ CORE.objs_y     := $(CORE.objs_y) $(CORE.objs_y_tpl)
 $(CORE.tmpdir_a)/$(core_a:%.$a=%_link.txt): $(CORE.objs_a) | $(CORE.tmpdir_a)/. ; $(WRITE.PREREQS)
 $(CORE.tmpdir_a)/$(core_a:%.$a=%_link.$a):  LOPT:=
 $(CORE.tmpdir_a)/$(core_a:%.$a=%_link.$a):  $(CORE.tmpdir_a)/$(core_a:%.$a=%_link.txt) | $(CORE.tmpdir_a)/. ; $(LINK.STATIC)
-$(WORKDIR.lib)/$(core_a):                   LOPT:=
+$(WORKDIR.lib)/$(core_a):                   LOPT += -Wl,--exclude-libs=ALL
 $(WORKDIR.lib)/$(core_a):                   $(daaldep.math_backend.ext) $(VTUNESDK.LIBS_A) $(CORE.tmpdir_a)/$(core_a:%.$a=%_link.$a) ; $(LINK.STATIC)
 
-$(WORKDIR.lib)/$(core_y): LOPT += $(-fPIC)
+$(WORKDIR.lib)/$(core_y): LOPT += $(-fPIC) -Wl,--exclude-libs=ALL
 $(WORKDIR.lib)/$(core_y): LOPT += $(daaldep.rt.seq)
 $(WORKDIR.lib)/$(core_y): LOPT += $(if $(OS_is_win),-IMPLIB:$(@:%.$(MAJORBINARY).dll=%_dll.lib),)
 ifdef OS_is_win
@@ -697,7 +697,7 @@ $(eval $(call update_copt_from_dispatcher_tag,$(ONEAPI.objs_a.dpc),.dpcpp))
 
 # Set compilation options to the object files which are part of DYNAMIC lib
 $(ONEAPI.objs_y): $(ONEAPI.dispatcher_cpu) $(ONEAPI.tmpdir_y)/inc_y_folders.txt
-$(ONEAPI.objs_y): COPT += $(-fPIC) $(-cxx17) $(-Zl) $(-DMKL_ILP64) $(-DEBC) $(-EHsc) $(pedantic.opts) \
+$(ONEAPI.objs_y): COPT += $(-fPIC) -fvisibility=hidden $(-cxx17) $(-Zl) $(-DMKL_ILP64) $(-DEBC) $(-EHsc) $(pedantic.opts) \
                           -DDAAL_NOTHROW_EXCEPTIONS \
                           -DDAAL_HIDE_DEPRECATED \
                           -D_ENABLE_ATOMIC_ALIGNMENT_FIX \
@@ -713,7 +713,7 @@ $(eval $(call update_copt_from_dispatcher_tag,$(ONEAPI.objs_y)))
 # When compiling with the debug flag $(-DEBC_DPCPP), linking with libonedal_dpc.so may cause indefinite linking times
 # due to the extensive processing of debug information. For debugging, please use the static library version (libonedal_dpc.a).
 $(ONEAPI.objs_y.dpc): $(ONEAPI.dispatcher_cpu) $(ONEAPI.tmpdir_y.dpc)/inc_y_folders.txt
-$(ONEAPI.objs_y.dpc): COPT += $(-fPIC) $(-cxx17) $(-Zl_DPCPP) $(-DMKL_ILP64) $(-EHsc) $(pedantic.opts.dpcpp) \
+$(ONEAPI.objs_y.dpc): COPT += $(-fPIC) -fvisibility=hidden $(-cxx17) $(-Zl_DPCPP) $(-DMKL_ILP64) $(-EHsc) $(pedantic.opts.dpcpp) \
                               -DDAAL_NOTHROW_EXCEPTIONS \
                               -DDAAL_HIDE_DEPRECATED \
                               -DONEDAL_DATA_PARALLEL \
