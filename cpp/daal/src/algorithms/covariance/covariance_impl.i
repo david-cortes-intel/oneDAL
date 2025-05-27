@@ -227,7 +227,13 @@ public:
                 /* Sum input array elements in case of non-normalized data */
                 for (DAAL_INT i = 0; i < nRows; i++)
                 {
-                    daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, sumsPtr, dataBlock + i * _nFeatures, sumsPtr);
+                    PRAGMA_FORCE_SIMD
+                    PRAGMA_VECTOR_ALWAYS
+                    for (DAAL_INT j = 0; j < _nFeatures; j++)
+                    {
+                        sumsPtr[j] += dataBlock[i * _nFeatures + j];
+                    }
+                    // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, sumsPtr, dataBlock + i * _nFeatures, sumsPtr);
                 }
             }
         }
@@ -263,7 +269,15 @@ public:
             return;
         }
 
-        daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures * _nFeatures, thisCrossProduct, otherCrossProduct, thisCrossProduct);
+        // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures * _nFeatures, thisCrossProduct, otherCrossProduct, thisCrossProduct);
+        /// It is safe to use aligned loads and stores because the data in TArrayScalableCalloc data structures is aligned
+        PRAGMA_FORCE_SIMD
+        PRAGMA_VECTOR_ALWAYS
+        PRAGMA_VECTOR_ALIGNED
+        for (size_t i = 0; i < (_nFeatures * _nFeatures); i++)
+        {
+            thisCrossProduct[i] += otherCrossProduct[i];
+        }
         if (!_isNormalized)
         {
             algorithmFPType * thisSums        = sums();
@@ -273,7 +287,15 @@ public:
                 errorCode = ErrorCode::memAllocationFailed;
                 return;
             }
-            daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, thisSums, otherSums, thisSums);
+            // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, thisSums, otherSums, thisSums);
+            /// It is safe to use aligned loads and stores because the data is aligned
+            PRAGMA_FORCE_SIMD
+            PRAGMA_VECTOR_ALWAYS
+            PRAGMA_VECTOR_ALIGNED
+            for (size_t i = 0; i < _nFeatures; i++)
+            {
+                thisSums[i] += otherSums[i];
+            }
         }
     }
 
@@ -514,7 +536,11 @@ void mergeCrossProductAndSums(size_t nFeatures, const algorithmFPType * partialC
         nObservations[0] += partialNObservations[0];
 
         /* Merge sums */
-        daal::internal::MathInst<algorithmFPType, cpu>::vAdd(nFeatures, sums, partialSums, sums);
+        // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(nFeatures, sums, partialSums, sums);
+        for (size_t i = 0; i < nFeatures; i++)
+        {
+            sums[i] += partialSums[i];
+        }
     }
 }
 
