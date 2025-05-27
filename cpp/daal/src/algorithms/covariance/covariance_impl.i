@@ -408,7 +408,7 @@ services::Status updateDenseCrossProductAndSums(bool isNormalized, size_t nFeatu
             {
                 return services::Status(services::ErrorMemoryAllocationFailed);
             }
-            daal::services::internal::daal_memcpy_s(sums, nFeatures, resultSums, nFeatures);
+            daal::services::internal::daal_memcpy_s(sums, nFeatures * sizeof(algorithmFPType), resultSums, nFeatures * sizeof(algorithmFPType));
             for (size_t i = 0; i < nFeatures; i++)
             {
                 PRAGMA_FORCE_SIMD
