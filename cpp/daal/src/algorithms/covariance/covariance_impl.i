@@ -227,13 +227,7 @@ public:
                 /* Sum input array elements in case of non-normalized data */
                 for (DAAL_INT i = 0; i < nRows; i++)
                 {
-                    PRAGMA_FORCE_SIMD
-                    PRAGMA_VECTOR_ALWAYS
-                    for (DAAL_INT j = 0; j < _nFeatures; j++)
-                    {
-                        sumsPtr[j] += dataBlock[i * _nFeatures + j];
-                    }
-                    // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, sumsPtr, dataBlock + i * _nFeatures, sumsPtr);
+                    daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, sumsPtr, dataBlock + i * _nFeatures, sumsPtr);
                 }
             }
         }
@@ -269,7 +263,6 @@ public:
             return;
         }
 
-        // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures * _nFeatures, thisCrossProduct, otherCrossProduct, thisCrossProduct);
         /// It is safe to use aligned loads and stores because the data in TArrayScalableCalloc data structures is aligned
         PRAGMA_FORCE_SIMD
         PRAGMA_VECTOR_ALWAYS
@@ -287,7 +280,6 @@ public:
                 errorCode = ErrorCode::memAllocationFailed;
                 return;
             }
-            // daal::internal::MathInst<algorithmFPType, cpu>::vAdd(_nFeatures, thisSums, otherSums, thisSums);
             /// It is safe to use aligned loads and stores because the data is aligned
             PRAGMA_FORCE_SIMD
             PRAGMA_VECTOR_ALWAYS
