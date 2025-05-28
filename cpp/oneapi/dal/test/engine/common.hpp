@@ -196,11 +196,6 @@ inline auto compute(host_test_policy& policy, Args&&... args) {
     return dal::compute(std::forward<Args>(args)...);
 }
 
-template <class Parameters, typename... Args>
-inline auto compute_with_parameters(host_test_policy& policy, Args&&... args, Parameters params) {
-    return dal::compute(std::forward<Args>(args)..., params);
-}
-
 template <typename... Args>
 inline auto partial_compute(host_test_policy& policy, Args&&... args) {
     return dal::partial_compute(std::forward<Args>(args)...);

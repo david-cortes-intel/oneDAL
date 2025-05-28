@@ -34,12 +34,15 @@ public:
 
     void online_general_checks(const te::dataframe& input,
                                const te::table_id& input_table_id,
-                               descriptor_t cov_desc) {
+                               descriptor_t cov_desc,
+                               const bool non_batched_route) {
         const table data = input.get_table(this->get_policy(), input_table_id);
         dal::covariance::partial_compute_result<> partial_result;
         auto input_table = split_table_by_rows<double>(data, blocks_count_);
+        detail::train_parameters parameters{};
+        parameters.set_cpu_max_cols_batched(non_batched_route? 100'000 : 1);
         for (std::int64_t i = 0; i < blocks_count_; ++i) {
-            partial_result = this->partial_compute(cov_desc, partial_result, input_table[i]);
+            partial_result = this->partial_compute_with_parameters(parameters, cov_desc, partial_result, input_table[i]);
         }
         auto compute_result = this->finalize_compute(cov_desc, partial_result);
         this->check_compute_result(cov_desc, data, compute_result);
@@ -101,6 +104,8 @@ TEMPLATE_LIST_TEST_M(covariance_online_test,
                      covariance::result_options::means);
     INFO("result_option=" << result_option);
 
+    bool non_batched_route = GENERATE(false, true);
+
     auto cov_desc = covariance::descriptor<Float, Method, covariance::task::compute>()
                         .set_result_options(result_option)
                         .set_assume_centered(assume_centered)
@@ -115,7 +120,7 @@ TEMPLATE_LIST_TEST_M(covariance_online_test,
 
     // Homogen floating point type is the same as algorithm's floating point type
     const auto input_data_table_id = this->get_homogen_table_id();
-    this->online_general_checks(input, input_data_table_id, cov_desc);
+    this->online_general_checks(input, input_data_table_id, cov_desc, non_batched_route);
 }
 
 } // namespace oneapi::dal::covariance::test
