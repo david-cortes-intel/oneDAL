@@ -38,8 +38,11 @@ public:
         const table data = input.get_table(this->get_policy(), input_table_id);
         dal::covariance::partial_compute_result<> partial_result;
         auto input_table = split_table_by_rows<double>(data, blocks_count_);
+        detail::compute_parameters parameters{};
+        parameters.set_cpu_max_cols_batched(1);
         for (std::int64_t i = 0; i < blocks_count_; ++i) {
-            partial_result = this->partial_compute(cov_desc, partial_result, input_table[i]);
+            partial_result = this->partial_compute_with_parameters(cov_desc, parameters, partial_result, input_table[i]);
+            // partial_result = this->partial_compute(cov_desc, partial_result, input_table[i]);
         }
         auto compute_result = this->finalize_compute(cov_desc, partial_result);
         this->check_compute_result(cov_desc, data, compute_result);

@@ -30,6 +30,15 @@ struct partial_compute_ops_dispatcher<Policy, Float, Method, Task> {
             KERNEL_SINGLE_NODE_CPU(backend::partial_compute_kernel_cpu<Float, Method, Task>)>;
         return kernel_dispatcher_t()(policy, desc, input);
     }
+
+    partial_compute_result<Task> operator()(const Policy& policy,
+                                            const descriptor_base<Task>& desc,
+                                            const compute_parameters<Task>& params,
+                                            const partial_compute_input<Task>& input) const {
+        using kernel_dispatcher_t = dal::backend::kernel_dispatcher< //
+            KERNEL_SINGLE_NODE_CPU(backend::partial_compute_kernel_cpu<Float, Method, Task>)>;
+        return kernel_dispatcher_t()(policy, desc, params, input);
+    }
 };
 
 #define INSTANTIATE(F, M, T) \

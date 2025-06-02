@@ -36,6 +36,7 @@ struct partial_compute_ops {
     using task_t = typename Descriptor::task_t;
     using input_t = partial_compute_input<task_t>;
     using result_t = partial_compute_result<task_t>;
+    using param_t = compute_parameters<task_t>;
     using descriptor_base_t = descriptor_base<task_t>;
 
     void check_preconditions(const Descriptor& params, const input_t& input) const {
@@ -70,6 +71,18 @@ struct partial_compute_ops {
         check_preconditions(desc, input);
         const auto result =
             partial_compute_ops_dispatcher<Context, float_t, method_t, task_t>()(ctx, desc, input);
+        check_postconditions(desc, input, result);
+        return result;
+    }
+
+    template <typename Context>
+    auto operator()(const Context& ctx,
+                    const Descriptor& desc,
+                    const param_t& params,
+                    const partial_compute_input<task_t>& input) const {
+        check_preconditions(desc, input);
+        const auto result =
+            partial_compute_ops_dispatcher<Context, float_t, method_t, task_t>()(ctx, desc, params, input);
         check_postconditions(desc, input, result);
         return result;
     }

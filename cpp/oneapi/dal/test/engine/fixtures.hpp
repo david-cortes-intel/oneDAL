@@ -64,9 +64,20 @@ public:
         return oneapi::dal::test::engine::compute(get_policy(), std::forward<Args>(args)...);
     }
 
+    template <class Descriptor, class Parameters, typename... Args>
+    auto compute_with_parameters(Descriptor descriptor, Parameters params, Args&&... args) {
+        return oneapi::dal::test::engine::compute(get_policy(), descriptor, params, std::forward<Args>(args)...);
+    }
+
     template <typename... Args>
     auto partial_compute(Args&&... args) {
         return oneapi::dal::test::engine::partial_compute(get_policy(),
+                                                          std::forward<Args>(args)...);
+    }
+
+    template <class Descriptor, class Parameters, typename... Args>
+    auto partial_compute_with_parameters(Descriptor descriptor, Parameters params, Args&&... args) {
+        return oneapi::dal::test::engine::partial_compute(get_policy(), descriptor, params,
                                                           std::forward<Args>(args)...);
     }
 

@@ -50,6 +50,7 @@ template <typename Float, typename Task>
 static partial_compute_result<Task> call_daal_kernel_partial_compute(
     const context_cpu& ctx,
     const descriptor_t& desc,
+    const daal_hyperparameters_t& params,
     const partial_compute_input<Task>& input) {
     ONEDAL_PROFILER_TASK(partial_compute_cov);
     const std::int64_t component_count = input.get_data().get_column_count();
@@ -61,8 +62,6 @@ static partial_compute_result<Task> call_daal_kernel_partial_compute(
 
     auto data = input.get_data();
     const auto daal_data = interop::convert_to_daal_table<Float>(data);
-    const daal_hyperparameters_t& hp =
-        convert_parameters<Float, Task>(detail::compute_parameters<Task>{});
     auto result = partial_compute_result();
 
     const bool has_nobs_data = input_.get_partial_n_rows().has_data();
@@ -80,7 +79,7 @@ static partial_compute_result<Task> call_daal_kernel_partial_compute(
                                                                        daal_crossproduct.get(),
                                                                        daal_sums.get(),
                                                                        &daal_parameter,
-                                                                       &hp));
+                                                                       &params));
         result.set_partial_sum(interop::convert_from_daal_homogen_table<Float>(daal_sums));
         result.set_partial_n_rows(
             interop::convert_from_daal_homogen_table<Float>(daal_nobs_matrix));
@@ -105,7 +104,7 @@ static partial_compute_result<Task> call_daal_kernel_partial_compute(
                                                                        daal_crossproduct.get(),
                                                                        daal_sums.get(),
                                                                        &daal_parameter,
-                                                                       &hp));
+                                                                       &params));
 
         result.set_partial_sum(interop::convert_from_daal_homogen_table<Float>(daal_sums));
         result.set_partial_n_rows(
@@ -118,11 +117,44 @@ static partial_compute_result<Task> call_daal_kernel_partial_compute(
 }
 
 template <typename Float, typename Task>
+static partial_compute_result<Task> call_daal_kernel_partial_compute(
+    const context_cpu& ctx,
+    const descriptor_t& desc,
+    const partial_compute_input<Task>& input) {
+    
+    const daal_hyperparameters_t& hp =
+    convert_parameters<Float, Task>(detail::compute_parameters<Task>{});
+    return call_daal_kernel_partial_compute<Float, Task>(
+        ctx,
+        desc,
+        hp,
+        input);
+}
+
+template <typename Float, typename Task>
 static partial_compute_result<Task> partial_compute(const context_cpu& ctx,
                                                     const descriptor_t& desc,
                                                     const partial_compute_input<Task>& input) {
     return call_daal_kernel_partial_compute<Float, Task>(ctx, desc, input);
 }
+
+template <typename Float, typename Task>
+static partial_compute_result<Task> partial_compute(const context_cpu& ctx,
+                                                    const descriptor_t& desc,
+                                                    const daal_hyperparameters_t& params,
+                                                    const partial_compute_input<Task>& input) {
+    return call_daal_kernel_partial_compute<Float, Task>(ctx, desc, params, input);
+}
+
+// template <typename Float>
+// struct partial_compute_kernel_cpu<Float, method::by_default, task::compute> {
+//     partial_compute_result<task::compute> operator()(
+//         const context_cpu& ctx,
+//         const descriptor_t& desc,
+//         const partial_compute_input<task::compute>& input) const {
+//         return partial_compute<Float, task::compute>(ctx, desc, input);
+//     }
+// };
 
 template <typename Float>
 struct partial_compute_kernel_cpu<Float, method::by_default, task::compute> {
@@ -131,6 +163,14 @@ struct partial_compute_kernel_cpu<Float, method::by_default, task::compute> {
         const descriptor_t& desc,
         const partial_compute_input<task::compute>& input) const {
         return partial_compute<Float, task::compute>(ctx, desc, input);
+    }
+
+    partial_compute_result<task::compute> operator()(
+        const context_cpu& ctx,
+        const descriptor_t& desc,
+        const daal_hyperparameters_t& params,
+        const partial_compute_input<task::compute>& input) const {
+        return partial_compute<Float, task::compute>(ctx, desc, params, input);
     }
 };
 
