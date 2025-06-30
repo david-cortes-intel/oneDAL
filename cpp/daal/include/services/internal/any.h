@@ -81,13 +81,13 @@ public:
     template <typename T>
     const T & get() const
     {
-        return static_cast<const Value<T> *>(_value)->get();
+        return reinterpret_cast<const Value<T> *>(_value)->get();
     }
 
     template <typename T>
     T & get()
     {
-        return static_cast<Value<T> *>(_value)->get();
+        return reinterpret_cast<Value<T> *>(_value)->get();
     }
 
     Any & swap(Any & other)
