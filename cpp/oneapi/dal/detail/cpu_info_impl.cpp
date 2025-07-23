@@ -22,7 +22,21 @@
 namespace oneapi::dal::detail {
 namespace v1 {
 
+// std::map<uint64_t, const std::string> cpu_feature_map = {
+std::map<uint64_t, const char *> cpu_feature_map = {
+    { uint64_t(cpu_feature::unknown), "Unknown" },
+#if defined(TARGET_X86_64)
+    { uint64_t(cpu_feature::sstep), "Intel(R) SpeedStep" },
+    { uint64_t(cpu_feature::tb), "Intel(R) Turbo Boost" },
+    { uint64_t(cpu_feature::avx512_bf16), "AVX-512 bfloat16" },
+    { uint64_t(cpu_feature::avx512_vnni), "AVX-512 VNNI" },
+    { uint64_t(cpu_feature::tb3), "Intel(R) Turbo Boost Max 3.0" }
+#endif
+};
+
 std::string ONEDAL_EXPORT to_string(cpu_vendor vendor) {
+    std::cerr << "to_string(cpu_vendor vendor)" << std::endl;
+    // return std::string("Unknown");
     std::string vendor_str;
     switch (vendor) {
         case cpu_vendor::unknown: vendor_str = std::string("Unknown"); break;
@@ -35,6 +49,8 @@ std::string ONEDAL_EXPORT to_string(cpu_vendor vendor) {
 }
 
 std::string ONEDAL_EXPORT to_string(cpu_extension extension) {
+    std::cerr << "to_string(cpu_extension extension)" << std::endl;
+    // return std::string("Unknown");
     std::string extension_str;
     switch (extension) {
         case cpu_extension::none: extension_str = std::string("none"); break;
@@ -72,6 +88,7 @@ void any_to_stream(const std::any& value, std::ostream& ss) {
 }
 
 void cpu_features_to_stream(const std::any& value, std::ostream& ss) {
+    std::cerr << "cpu_features_to_stream" << std::endl;
     std::uint64_t cpu_features = std::any_cast<std::uint64_t>(value);
     if (cpu_features == 0) {
         const auto entry = cpu_feature_map.find(0);
@@ -90,6 +107,8 @@ void cpu_features_to_stream(const std::any& value, std::ostream& ss) {
 }
 
 cpu_vendor cpu_info_impl::get_cpu_vendor() const {
+    std::cerr << "cpu_info_impl::get_cpu_vendor()" << std::endl;
+    // return cpu_vendor::unknown;
     const auto entry = info_.find("vendor");
     if (entry == info_.end()) {
         throw invalid_argument{ error_messages::invalid_key() };
@@ -98,6 +117,8 @@ cpu_vendor cpu_info_impl::get_cpu_vendor() const {
 }
 
 cpu_extension cpu_info_impl::get_top_cpu_extension() const {
+    std::cerr << "cpu_info_impl::get_top_cpu_extension()" << std::endl;
+    // return cpu_extension::none;
     const auto entry = info_.find("top_cpu_extension");
     if (entry == info_.end()) {
         throw invalid_argument{ error_messages::invalid_key() };
@@ -106,6 +127,8 @@ cpu_extension cpu_info_impl::get_top_cpu_extension() const {
 }
 
 cpu_extension cpu_info_impl::get_onedal_cpu_extension() const {
+    std::cerr << "cpu_info_impl::get_onedal_cpu_extension()" << std::endl;
+    // return cpu_extension::none;
     const auto entry = info_.find("onedal_cpu_extension");
     if (entry == info_.end()) {
         throw invalid_argument{ error_messages::invalid_key() };
@@ -114,6 +137,8 @@ cpu_extension cpu_info_impl::get_onedal_cpu_extension() const {
 }
 
 uint64_t cpu_info_impl::get_cpu_features() const {
+    std::cerr << "cpu_info_impl::get_cpu_features()" << std::endl;
+    // return 0;
     const auto entry = info_.find("cpu_features");
     if (entry == info_.end()) {
         throw invalid_argument{ error_messages::invalid_key() };
@@ -122,6 +147,7 @@ uint64_t cpu_info_impl::get_cpu_features() const {
 }
 
 std::string cpu_info_impl::dump() const {
+    std::cerr << "cpu_info_impl::dump()" << std::endl;
     std::ostringstream ss;
     for (auto const& [name, value] : info_) {
         ss << name << " : ";

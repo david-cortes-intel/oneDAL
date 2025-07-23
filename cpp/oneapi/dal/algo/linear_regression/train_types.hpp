@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "oneapi/dal/algo/linear_regression/common.hpp"
 #include "oneapi/dal/detail/parameters/system_parameters.hpp"
 
@@ -38,7 +40,8 @@ class partial_train_result_impl;
 template <typename Task = task::by_default>
 class train_parameters : public dal::detail::system_parameters {
 public:
-    explicit train_parameters();
+    train_parameters();
+    ~train_parameters();
     train_parameters(train_parameters&&) = default;
     train_parameters(const train_parameters&) = default;
 
@@ -88,7 +91,8 @@ private:
     void set_cpu_max_cols_batched_impl(std::int64_t val);
     void set_cpu_small_rows_threshold_impl(std::int64_t val);
     void set_cpu_small_rows_max_cols_batched_impl(std::int64_t val);
-    dal::detail::pimpl<train_parameters_impl<Task>> impl_;
+    // dal::detail::pimpl<train_parameters_impl<Task>> impl_;
+    std::shared_ptr<train_parameters_impl<Task>> impl_;
 };
 
 } // namespace v1
@@ -105,7 +109,8 @@ namespace v1 {
 /// @tparam Task Tag-type that specifies type of the problem to solve. Can
 ///              be :expr:`task::regression`.
 template <typename Task = task::by_default>
-class train_input : public base {
+// class train_input : public base {
+class train_input {
     static_assert(detail::is_valid_task_v<Task>);
 
 public:
@@ -212,7 +217,8 @@ private:
 };
 
 template <typename Task = task::by_default>
-class partial_train_result : public base {
+// class partial_train_result : public base {
+class partial_train_result {
     static_assert(detail::is_valid_task_v<Task>);
 
 public:

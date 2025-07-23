@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "oneapi/dal/detail/common.hpp"
 #include "oneapi/dal/detail/parameters/system_parameters_impl.hpp"
@@ -30,10 +31,11 @@ namespace detail {
 ///
 /// `cpu_info` reports the parameters available in hardware, where `system_parameters`
 /// are the software-enabled parameters that can differ from `cpu_info`.
-class ONEDAL_EXPORT system_parameters : public base {
+// class ONEDAL_EXPORT system_parameters : public base {
+class ONEDAL_EXPORT system_parameters {
 public:
     /// Creates a new default `system_parameters` instance.
-    explicit system_parameters();
+    system_parameters();
 
     /// Host related parameters.
 
@@ -63,7 +65,8 @@ public:
 #endif
 
 private:
-    detail::pimpl<system_parameters_impl> impl_;
+    // detail::pimpl<system_parameters_impl> impl_;
+    std::shared_ptr<system_parameters_impl> impl_;
 };
 
 } // namespace detail

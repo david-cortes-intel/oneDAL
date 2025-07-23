@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <algorithm>
 #include "oneapi/dal/detail/hash_map.hpp"
 
@@ -98,7 +99,8 @@ template <typename T>
 using trivial_serialization_type_t = typename trivial_serialization_type<T>::type;
 
 template <typename Archive>
-class input_archive_impl : public base, public input_archive_iface {
+// class input_archive_impl : public base, public input_archive_iface {
+class input_archive_impl : public input_archive_iface {
 public:
     explicit input_archive_impl(Archive& archive) : archive_(archive) {}
 
@@ -123,7 +125,8 @@ private:
 };
 
 template <typename Archive>
-class output_archive_impl : public base, public output_archive_iface {
+// class output_archive_impl : public base, public output_archive_iface {
+class output_archive_impl : public output_archive_iface {
 public:
     explicit output_archive_impl(Archive& archive) : archive_(archive) {}
 
@@ -148,7 +151,8 @@ private:
 };
 
 template <typename Iface>
-class archive_base : public base {
+// class archive_base : public base {
+class archive_base {
 protected:
     explicit archive_base(Iface* impl) noexcept : impl_(impl) {
         ONEDAL_ASSERT(impl);
@@ -292,6 +296,7 @@ template <typename T>
 class default_serializable_factory : public serializable_factory_iface {
 public:
     static const default_serializable_factory& instance() {
+        std::cout << "default_serializable_factory instance" << std::endl;
         static default_serializable_factory factory;
         return factory;
     }
@@ -304,12 +309,14 @@ private:
     default_serializable_factory() = default;
 };
 
-class serializable_registry : public base {
+// class serializable_registry : public base {
+class serializable_registry {
 public:
     ONEDAL_EXPORT static serializable_registry& instance();
 
     template <typename T>
     T* make(std::uint64_t serialization_id) {
+        std::cerr << "serializable_registry::make" << std::endl;
         ONEDAL_ASSERT(factories_.has(serialization_id),
                       "Factory with requested serialization_id was not registered");
 
@@ -330,14 +337,19 @@ public:
 
     template <typename T>
     bool register_default_factory(std::uint64_t serialization_id) {
+        std::cerr << "register_default_factory" << std::endl;
         return register_factory(serialization_id, &default_serializable_factory<T>::instance());
     }
 
 private:
-    serializable_registry() = default;
+    // serializable_registry() = default;
+    serializable_registry(){
+        std::cerr << "serializable_registry()" << std::endl;
+    }
 
     bool register_factory(std::uint64_t serialization_id,
                           const serializable_factory_iface* factory) {
+        std::cerr << "register_factory" << std::endl;
         ONEDAL_ASSERT(factory);
         ONEDAL_ASSERT(!factories_.has(serialization_id),
                       "Factory with the provided serialization_id is already registered");
@@ -351,7 +363,8 @@ private:
 };
 
 template <std::uint64_t SerializationId>
-class serializable : public base, public serializable_iface {
+// class serializable : public base, public serializable_iface {
+class serializable : public serializable_iface {
 public:
     static std::uint64_t serialization_id() {
         return SerializationId;

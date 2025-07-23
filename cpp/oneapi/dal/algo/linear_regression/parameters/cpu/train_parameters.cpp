@@ -15,6 +15,7 @@
 *******************************************************************************/
 
 #include <algorithm>
+#include <iostream>
 
 #include "oneapi/dal/detail/common.hpp"
 #include "oneapi/dal/detail/profiler.hpp"
@@ -59,6 +60,7 @@ struct train_parameters_cpu<Float, method::norm_eq, Task> {
     params_t operator()(const context_cpu& ctx,
                         const detail::descriptor_base<Task>& desc,
                         const train_input<Task>& input) const {
+        std::cerr << "train_parameters_cpu() [1]" << std::endl;
         const auto& x_train = input.get_data();
         const auto& y_train = input.get_responses();
 
@@ -83,6 +85,7 @@ struct train_parameters_cpu<Float, method::norm_eq, Task> {
     params_t operator()(const context_cpu& ctx,
                         const detail::descriptor_base<Task>& desc,
                         const partial_train_input<Task>& input) const {
+        std::cerr << "train_parameters_cpu() [2]" << std::endl;
         const auto& x_train = input.get_data();
         const auto& y_train = input.get_responses();
 
@@ -107,6 +110,7 @@ struct train_parameters_cpu<Float, method::norm_eq, Task> {
     params_t operator()(const context_cpu& ctx,
                         const detail::descriptor_base<Task>& desc,
                         const partial_train_result<Task>& input) const {
+        std::cerr << "train_parameters_cpu() [3]" << std::endl;
         const auto& xtx = input.get_partial_xtx();
         const auto& xty = input.get_partial_xty();
 

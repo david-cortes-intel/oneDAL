@@ -23,6 +23,14 @@
 namespace oneapi::dal {
 namespace v1 {
 
+
+// base::base() {
+//     std::cerr << "base()" << std::endl;
+// }
+// base::~base() {
+//     std::cerr << "~base()" << std::endl;
+// }
+
 template <typename... Args>
 auto compute(Args&&... args) {
     return dal::detail::compute_dispatch(std::forward<Args>(args)...);

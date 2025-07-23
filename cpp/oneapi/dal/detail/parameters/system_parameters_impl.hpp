@@ -23,14 +23,14 @@
 #endif
 
 #include <any>
-#include <map>
+// #include <map>
 
 namespace oneapi::dal::detail {
 namespace v1 {
 
 class system_parameters_impl {
 public:
-    explicit system_parameters_impl();
+    system_parameters_impl();
 
     cpu_extension get_top_enabled_cpu_extension() const;
     std::uint32_t get_max_number_of_threads() const;
@@ -46,7 +46,7 @@ public:
 #endif
 
 private:
-    std::map<std::string, std::any> sys_info_;
+    // std::map<std::string, std::any> sys_info_;
 
     void print_any(const std::any& value, std::ostringstream& ss) const;
 };

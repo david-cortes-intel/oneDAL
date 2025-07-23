@@ -18,6 +18,8 @@
 
 #include <cstdint>
 #include <utility>
+#include <iostream>
+#include <stdexcept>
 
 #ifdef __ONEDAL_ENABLE_EXPORT__
 #if defined(_WIN32) || defined(_WIN64)
@@ -76,9 +78,27 @@ namespace v1 {
 
 using byte_t = std::uint8_t;
 
+// class base {
+// public:
+//     virtual ~base() = default;
+// };
+// class base {
+// public:
+//     base();
+//     virtual ~base();
+// };
+
 class base {
 public:
-    virtual ~base() = default;
+    [[gnu::always_inline]]
+    base() {
+        std::cerr << "base()" << std::endl;
+        throw std::runtime_error("here");
+    }
+    [[gnu::always_inline]]
+    virtual ~base() {
+        std::cerr << "~base()" << std::endl;
+    }
 };
 
 enum class data_type : std::int32_t {

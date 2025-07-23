@@ -14,6 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
+#include <iostream>
 #include "oneapi/dal/common.hpp"
 #include "oneapi/dal/detail/cpu.hpp"
 #include <daal/src/services/service_defines.h>
@@ -39,16 +40,22 @@ ONEDAL_EXPORT cpu_extension from_daal_cpu_type(int cpu_type) {
 }
 
 ONEDAL_EXPORT cpu_extension detect_top_cpu_extension() {
+    std::cerr << "detect_top_cpu_extension()" << std::endl;
+    // return cpu_extension::none;
     const auto daal_cpu = __daal_serv_cpu_detect(0);
     return from_daal_cpu_type(daal_cpu);
 }
 
 ONEDAL_EXPORT cpu_extension detect_onedal_cpu_extension() {
+    std::cerr << "detect_onedal_cpu_extension()" << std::endl;
+    // return cpu_extension::none;
     const auto daal_cpu = daal_enabled_cpu_detect();
     return from_daal_cpu_type(daal_cpu);
 }
 
 uint64_t detect_cpu_features() {
+    std::cerr << "detect_cpu_features()" << std::endl;
+    // return 0;
     return daal_serv_cpu_feature_detect();
 }
 

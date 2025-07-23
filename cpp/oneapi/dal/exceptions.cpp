@@ -15,8 +15,18 @@
 *******************************************************************************/
 
 #include "oneapi/dal/exceptions.hpp"
+#include "oneapi/dal/common.hpp"
 
 namespace oneapi::dal {
+
+// namespace v1 {
+// base::base() {
+//     std::cerr << "base()" << std::endl;
+// }
+// base::~base() {
+//     std::cerr << "~base()" << std::endl;
+// }
+// }
 
 const char* invalid_argument::what() const noexcept {
     return std::invalid_argument::what();

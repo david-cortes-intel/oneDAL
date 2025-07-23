@@ -14,28 +14,45 @@
 * limitations under the License.
 *******************************************************************************/
 
+#include <iostream>
 #include "oneapi/dal/algo/linear_regression/train_types.hpp"
 #include "oneapi/dal/detail/common.hpp"
 #include "oneapi/dal/exceptions.hpp"
+
+// namespace oneapi::dal::v1 {
+// base::base() {
+//     std::cerr << "base()" << std::endl;
+// }
+// base::~base() {
+//     std::cerr << "~base()" << std::endl;
+// }
+// }
+
 
 namespace oneapi::dal::linear_regression {
 
 namespace detail::v1 {
 
 template <typename Task>
-class train_input_impl : public base {
+// class train_input_impl : public base {
+class train_input_impl {
 public:
-    train_input_impl() : data(table()){};
+    train_input_impl() : data(table()){
+        std::cerr << "train_input_impl() [1]" << std::endl;
+    };
     train_input_impl(const table& data, const table& responses = table{})
             : data(data),
-              responses(responses) {}
+              responses(responses) {
+                std::cerr << "train_input_impl() [2]" << std::endl;
+              }
 
     table data;
     table responses;
 };
 
 template <typename Task>
-class train_result_impl : public base {
+// class train_result_impl : public base {
+class train_result_impl {
 public:
     table intercept;
     table coefficients;
@@ -46,14 +63,16 @@ public:
 };
 
 template <typename Task>
-class partial_train_result_impl : public base {
+// class partial_train_result_impl : public base {
+class partial_train_result_impl {
 public:
     table xtx;
     table xty;
 };
 
 template <typename Task>
-struct train_parameters_impl : public base {
+// struct train_parameters_impl : public base {
+struct train_parameters_impl {
     std::int64_t cpu_macro_block = 8'192l;
     std::int64_t gpu_macro_block = 16'384l;
     std::int64_t cpu_max_cols_batched = 4'096l;
@@ -61,8 +80,23 @@ struct train_parameters_impl : public base {
     std::int64_t cpu_small_rows_max_cols_batched = 1'024l;
 };
 
+// template <typename Task>
+// train_parameters<Task>::train_parameters() : impl_(new train_parameters_impl<Task>{}) {}
 template <typename Task>
-train_parameters<Task>::train_parameters() : impl_(new train_parameters_impl<Task>{}) {}
+train_parameters<Task>::train_parameters() : 
+dal::detail::system_parameters()
+,
+impl_(
+    new train_parameters_impl<Task>{}
+)
+{
+    std::cerr << "train_parameters<Task>::train_parameters()" << std::endl;
+}
+
+template <typename Task>
+train_parameters<Task>::~train_parameters() {
+    std::cerr << "~train_parameters()" << std::endl;
+}
 
 template <typename Task>
 std::int64_t train_parameters<Task>::get_cpu_macro_block() const {

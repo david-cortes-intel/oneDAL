@@ -14,11 +14,13 @@
 * limitations under the License.
 *******************************************************************************/
 
+#include <iostream>
 #include "oneapi/dal/detail/serialization.hpp"
 
 namespace oneapi::dal::detail {
 
 ONEDAL_EXPORT serializable_registry& serializable_registry::instance() {
+    std::cerr << "serializable_registry::instance()" << std::endl;
     static serializable_registry factory;
     return factory;
 }

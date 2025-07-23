@@ -24,6 +24,7 @@
 #ifndef __SERVICE_SERVICE_MKL_H__
 #define __SERVICE_SERVICE_MKL_H__
 
+#include <iostream>
 #include "services/daal_defines.h"
 #include "src/services/service_topo.h"
 #include <mkl.h>
@@ -62,16 +63,24 @@ struct MklService
         // return memmove_s(dest, destSize, src, smax);
     }
 
-    static int serv_get_ht() { return (serv_get_ncorespercpu() > 1 ? 1 : 0); }
+    static int serv_get_ht() { 
+        std::cerr << "serv_get_ht()" << std::endl;
+        // return 1;
+        return (serv_get_ncorespercpu() > 1 ? 1 : 0);
+    }
 
     static int serv_get_ncpus()
     {
+        std::cerr << "serv_get_ncpus()" << std::endl;
+        // return 1;
         unsigned int ncores = daal::services::internal::_internal_daal_GetProcessorCoreCount();
         return (ncores ? ncores : 1);
     }
 
     static int serv_get_ncorespercpu()
     {
+        std::cerr << "serv_get_ncorespercpu()" << std::endl;
+        // return 1;
         unsigned int nlogicalcpu = daal::services::internal::_internal_daal_GetProcessorCoreCount();
         unsigned int ncpus       = serv_get_ncpus();
         return (ncpus > 0 && nlogicalcpu > 0 && nlogicalcpu > ncpus ? nlogicalcpu / ncpus : 1);

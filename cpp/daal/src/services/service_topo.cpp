@@ -20,6 +20,7 @@
 //  Implementation of CPU topology reading routines
 //--
 */
+#include <iostream>
 #include "services/daal_defines.h"
 
 #if !(defined DAAL_CPU_TOPO_DISABLED)
@@ -1654,6 +1655,9 @@ static int __internal_daal_analyzeEachCHierarchy(unsigned subleaf, unsigned numM
  */
 static void __internal_daal_buildSystemTopologyTables()
 {
+    std::cerr << "__internal_daal_buildSystemTopologyTables()" << std::endl;
+    throw std::runtime_error("here");
+    // return;
     unsigned lcl_OSProcessorCount, subleaf;
     int numMappings = 0;
 

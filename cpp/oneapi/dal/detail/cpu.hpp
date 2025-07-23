@@ -73,16 +73,17 @@ enum class cpu_feature : uint64_t {
 /// A map of CPU features to their string representations.
 /// This map is used to convert CPU feature bitmasks to human-readable strings.
 /// Keys are bitflags representing CPU features. They are defined in daal::CpuFeature enumeration.
-inline const std::map<uint64_t, const std::string> cpu_feature_map = {
-    { uint64_t(cpu_feature::unknown), "Unknown" },
-#if defined(TARGET_X86_64)
-    { uint64_t(cpu_feature::sstep), "Intel(R) SpeedStep" },
-    { uint64_t(cpu_feature::tb), "Intel(R) Turbo Boost" },
-    { uint64_t(cpu_feature::avx512_bf16), "AVX-512 bfloat16" },
-    { uint64_t(cpu_feature::avx512_vnni), "AVX-512 VNNI" },
-    { uint64_t(cpu_feature::tb3), "Intel(R) Turbo Boost Max 3.0" }
-#endif
-};
+// inline const std::map<uint64_t, const std::string> cpu_feature_map = {
+//     { uint64_t(cpu_feature::unknown), "Unknown" },
+// #if defined(TARGET_X86_64)
+//     { uint64_t(cpu_feature::sstep), "Intel(R) SpeedStep" },
+//     { uint64_t(cpu_feature::tb), "Intel(R) Turbo Boost" },
+//     { uint64_t(cpu_feature::avx512_bf16), "AVX-512 bfloat16" },
+//     { uint64_t(cpu_feature::avx512_vnni), "AVX-512 VNNI" },
+//     { uint64_t(cpu_feature::tb3), "Intel(R) Turbo Boost Max 3.0" }
+// #endif
+// };
+// extern std::map<uint64_t, const std::string> cpu_feature_map;
 
 /// Converts a DAAL CPU extension value to oneDAL enumeration.
 /// @param ext The DAAL CPU extension value.
@@ -106,7 +107,7 @@ uint64_t detect_cpu_features();
 } // namespace v1
 using v1::cpu_vendor;
 using v1::cpu_extension;
-using v1::cpu_feature_map;
+// using v1::cpu_feature_map;
 using v1::detect_top_cpu_extension;
 using v1::detect_onedal_cpu_extension;
 using v1::detect_cpu_features;
