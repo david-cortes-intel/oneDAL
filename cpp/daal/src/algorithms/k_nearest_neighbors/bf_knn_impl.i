@@ -184,7 +184,6 @@ protected:
                                           TlsMem<int, cpu> & tlsIdx, TlsMem<FPType, cpu> & tlsKDistances, TlsMem<int, cpu> & tlsKIndexes,
                                           TlsMem<FPType, cpu> & tlsVoting, size_t nOuterBlocks)
     {
-        std::cout << "bruteforce2" << std::endl;
         const size_t inBlockSize = trainBlockSize;
         const size_t inRows      = nTrain;
         const size_t nInBlocks   = inRows / inBlockSize + (inRows % inBlockSize > 0);
@@ -240,6 +239,7 @@ protected:
             for (size_t i = 0; i < iSize; i++)
             {
                 const size_t indexes = getIndexesWithLessDistances(idx, distancesBuff + i * jSize, jSize, maxs[i]);
+                std::cout << "\t\tindexes:" << indexes << std::endl;
 
                 if (indexes)
                 {
@@ -283,6 +283,7 @@ protected:
             {
                 kDistances[i * k + kk] = heaps[i][kk].distance;
                 kIndexes[i * k + kk]   = heaps[i][kk].index;
+                std::cout << "\t[kD:" << heaps[i][kk].distance << "] [kI:" << heaps[i][kk].index << "]" << std::endl;
             }
         }
         distancesInstance->finalize(iSize * k, kDistances);
@@ -302,6 +303,7 @@ protected:
             DAAL_OVERFLOW_CHECK_BY_MULTIPLICATION(size_t, blockSize * sizeof(*indices), k);
             const size_t size = blockSize * k * sizeof(*indices);
             DAAL_CHECK(!daal::services::internal::daal_memcpy_s(indices, size, kIndexes, size), daal::services::ErrorMemoryCopyFailedInternal);
+            std::cout << "indices: [ "; for (size_t ix = 0; ix < blockSize * k; ix++) std::cout << indices[ix] << ", "; std::cout << "]" << std::endl;
         }
 
         if (resultsToCompute & computeDistances)
@@ -362,6 +364,7 @@ protected:
             Neighbors neigh;
             neigh.distance = d;
             neigh.index    = idx[j] + j1;
+            // std::cout << "\t[d:" << d << "] [ix:" << idx[j] << "]" << std::endl;
 
             heap.replaceMaxIfNeeded(neigh, k);
         }
