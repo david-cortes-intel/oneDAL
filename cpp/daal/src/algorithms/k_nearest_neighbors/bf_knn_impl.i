@@ -36,6 +36,8 @@
 #include "src/externals/service_math.h"
 #include "src/algorithms/k_nearest_neighbors/knn_heap.h"
 
+#include <iostream>
+
 namespace daal
 {
 namespace algorithms
@@ -63,6 +65,7 @@ public:
                                 NumericTable * distancesTable, bf_knn_classification::prediction::internal::PairwiseDistanceType pairwiseDistance,
                                 const double minkowskiDegree)
     {
+        std::cout << "bruteforce1" << std::endl;
         using bf_knn_classification::prediction::internal::PairwiseDistanceType;
 
         const size_t nDims  = trainTable->getNumberOfColumns();
@@ -181,6 +184,7 @@ protected:
                                           TlsMem<int, cpu> & tlsIdx, TlsMem<FPType, cpu> & tlsKDistances, TlsMem<int, cpu> & tlsKIndexes,
                                           TlsMem<FPType, cpu> & tlsVoting, size_t nOuterBlocks)
     {
+        std::cout << "bruteforce2" << std::endl;
         const size_t inBlockSize = trainBlockSize;
         const size_t inRows      = nTrain;
         const size_t nInBlocks   = inRows / inBlockSize + (inRows % inBlockSize > 0);
@@ -350,6 +354,7 @@ protected:
     void updateLocalNeighbours(size_t indexes, int * idx, size_t jSize, size_t i, size_t k, FPType * maxs, FPType * distances, size_t j1,
                                HeapType & heap)
     {
+        std::cout << "mark3" << std::endl;
         for (size_t j = 0; j < indexes; ++j)
         {
             FPType d = distances[i * jSize + idx[j]];
@@ -367,6 +372,7 @@ protected:
     services::Status uniformWeightedVoting(const size_t nClasses, const size_t k, const size_t n, const size_t nTrain, int * indices,
                                            const FPType * trainLabel, int * testLabel, FPType * classWeights)
     {
+        std::cout << "mark2" << std::endl;
         for (size_t i = 0; i < n; ++i)
         {
             for (size_t j = 0; j < nClasses; ++j)
@@ -396,6 +402,7 @@ protected:
     services::Status distanceWeightedVoting(const size_t nClasses, const size_t k, const size_t n, const size_t nTrain, FPType * distances,
                                             int * indices, const FPType * trainLabel, int * testLabel, FPType * classWeights)
     {
+        std::cout << "mark1" << std::endl;
         const FPType epsilon = daal::services::internal::EpsilonVal<FPType>::get();
 
         for (size_t i = 0; i < n; ++i)

@@ -40,6 +40,8 @@
 #include "src/algorithms/k_nearest_neighbors/kdtree_knn_impl.i"
 #include "src/algorithms/k_nearest_neighbors/knn_heap.h"
 
+#include <iostream>
+
 namespace daal
 {
 namespace algorithms
@@ -121,6 +123,7 @@ Status KNNClassificationPredictKernel<algorithmFpType, defaultDense, cpu>::compu
                                                                                    NumericTable * y, NumericTable * indices, NumericTable * distances,
                                                                                    const daal::algorithms::Parameter * par)
 {
+    std::cout << "bruteforce4" << std::endl;
     Status status;
 
     typedef GlobalNeighbors<algorithmFpType, cpu> Neighbors;
@@ -298,6 +301,7 @@ DAAL_FORCEINLINE void computeDistance(size_t start, size_t end, algorithmFpType 
                                       const NumericTable & data, data_management::BlockDescriptor<algorithmFpType> xBD[2],
                                       services::internal::TArrayScalable<algorithmFpType *, cpu> & soa_arrays)
 {
+    std::cout << "bruteforce5" << std::endl;
     for (size_t i = start; i < end; ++i)
     {
         distance[i - start] = 0;
@@ -346,6 +350,7 @@ void KNNClassificationPredictKernel<algorithmFpType, defaultDense, cpu>::findNea
     const KDTreeTable & kdTreeTable, size_t rootTreeNodeIndex, const NumericTable & data, const bool isHomogenSOA,
     services::internal::TArrayScalable<algorithmFpType *, cpu> & soa_arrays)
 {
+    std::cout << "bruteforce6" << std::endl;
     heap.reset();
     stack.reset();
     GlobalNeighbors<algorithmFpType, cpu> curNeighbor;
@@ -437,6 +442,7 @@ services::Status KNNClassificationPredictKernel<algorithmFpType, defaultDense, c
     VoteWeights voteWeights, const NumericTable * modelIndices, data_management::BlockDescriptor<int> & indices,
     data_management::BlockDescriptor<algorithmFpType> & distances, size_t index, const size_t nClasses)
 {
+    std::cout << "bruteforce7" << std::endl;
     typedef daal::internal::MathInst<algorithmFpType, cpu> Math;
 
     const size_t heapSize = heap.size();

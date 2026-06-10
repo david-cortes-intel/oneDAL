@@ -43,6 +43,8 @@
     #include <immintrin.h>
 #endif
 
+#include <iostream>
+
 namespace daal
 {
 namespace algorithms
@@ -138,6 +140,7 @@ Status KNNClassificationTrainBatchKernel<algorithmFpType, training::defaultDense
                                                                                                 kdtree_knn_classification::Model * r,
                                                                                                 engines::BatchBase & engine)
 {
+    std::cout << "bruteforce8" << std::endl;
     Status status;
 
     typedef daal::internal::MathInst<algorithmFpType, cpu> Math;

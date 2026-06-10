@@ -25,6 +25,8 @@
 #include "src/algorithms/k_nearest_neighbors/bf_knn_classification_model_impl.h"
 #include "src/algorithms/k_nearest_neighbors/bf_knn_impl.i"
 
+#include <iostream>
+
 namespace daal
 {
 namespace algorithms
@@ -39,6 +41,7 @@ template <typename algorithmFpType, CpuType cpu>
 services::Status KNNClassificationTrainKernel<algorithmFpType, cpu>::compute(NumericTable * x, NumericTable * y, Model * r, const Parameter & par,
                                                                              engines::BatchBase & engine)
 {
+    std::cout << "empty" << std::endl;
     return services::Status();
 }
 

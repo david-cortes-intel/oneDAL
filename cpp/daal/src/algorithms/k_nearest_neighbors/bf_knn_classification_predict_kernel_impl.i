@@ -28,6 +28,8 @@
 #include "src/services/service_data_utils.h"
 #include "src/data_management/service_numeric_table.h"
 
+#include <iostream>
+
 namespace daal
 {
 namespace algorithms
@@ -43,6 +45,7 @@ services::Status KNNClassificationPredictKernel<algorithmFPType, cpu>::compute(c
                                                                                NumericTable * label, NumericTable * indices, NumericTable * distances,
                                                                                const KernelParameter * par)
 {
+    std::cout << "bruteforce3" << std::endl;
     const Model * const convModel        = static_cast<const Model *>(m);
     NumericTableConstPtr trainDataTable  = convModel->impl()->getData();
     NumericTableConstPtr trainLabelTable = convModel->impl()->getLabels();

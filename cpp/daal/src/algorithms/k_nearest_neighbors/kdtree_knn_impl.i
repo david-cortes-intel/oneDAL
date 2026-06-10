@@ -27,6 +27,7 @@
 #if defined(_MSC_VER) || defined(DAAL_INTEL_CPP_COMPILER)
     #include <immintrin.h>
 #endif
+#include <iostream>
 
 namespace daal
 {
@@ -79,6 +80,7 @@ public:
 
     bool init(size_t size)
     {
+        std::cout << "kdtree1" << std::endl;
         _data       = static_cast<T *>(services::internal::service_malloc<T, cpu>(size));
         _size       = size;
         _sizeMinus1 = size - 1;
